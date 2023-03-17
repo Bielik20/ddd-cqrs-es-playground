@@ -1,0 +1,11 @@
+{
+  "compilerOptions": {
+    "emitDecoratorMetadata": true
+  },
+  "imports": {
+    "nanoid": "https://deno.land/x/nanoid/mod.ts"
+  },
+  "tasks": {
+    "dev": "deno run --watch main.ts"
+  }
+}
