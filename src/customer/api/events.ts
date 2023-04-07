@@ -1,47 +1,28 @@
-import { AggregateEvent } from "../../shared-kernel/aggregate/event.ts";
+import {
+  createAggregateEvent,
+  EventType,
+} from "../../shared-kernel/aggregate/event.ts";
 
-interface CustomerCreatedPayload {
+export const CustomerCreatedEvent = createAggregateEvent<{
   displayName: string;
   email: string;
-}
-export class CustomerCreatedEvent extends AggregateEvent<
-  "CustomerCreated",
-  CustomerCreatedPayload
-> {
-  constructor(payload: CustomerCreatedPayload) {
-    super("CustomerCreated", payload);
-  }
-}
+}>("Customer", "CustomerCreated");
+export type CustomerCreatedEvent = EventType<typeof CustomerCreatedEvent>;
 
-interface CustomerPaymentMethodAttachedPayload {
+export const CustomerPaymentMethodAttachedEvent = createAggregateEvent<{
   paymentMethod: {
     id: string;
     ownerName: string;
     last4Digits: string;
   };
-}
-export class CustomerPaymentMethodAttachedEvent extends AggregateEvent<
-  "CustomerPaymentMethodAttached",
-  CustomerPaymentMethodAttachedPayload
-> {
-  constructor(payload: CustomerPaymentMethodAttachedPayload) {
-    super("CustomerPaymentMethodAttached", payload);
-  }
-}
+}>("Customer", "CustomerPaymentMethodAttached");
+export type CustomerPaymentMethodAttachedEvent = EventType<
+  typeof CustomerPaymentMethodAttachedEvent
+>;
 
-interface CustomerPaymentMethodDetachedPayload {
+export const CustomerPaymentMethodDetachedEvent = createAggregateEvent<{
   paymentMethodId: string;
-}
-export class CustomerPaymentMethodDetachedEvent extends AggregateEvent<
-  "CustomerPaymentMethodDetached",
-  CustomerPaymentMethodDetachedPayload
-> {
-  constructor(payload: CustomerPaymentMethodDetachedPayload) {
-    super("CustomerPaymentMethodDetached", payload);
-  }
-}
-
-export type CustomerEvent =
-  | CustomerCreatedEvent
-  | CustomerPaymentMethodAttachedEvent
-  | CustomerPaymentMethodDetachedEvent;
+}>("Customer", "CustomerPaymentMethodDetached");
+export type CustomerPaymentMethodDetachedEvent = EventType<
+  typeof CustomerPaymentMethodDetachedEvent
+>;

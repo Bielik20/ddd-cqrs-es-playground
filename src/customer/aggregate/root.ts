@@ -1,8 +1,8 @@
 import { AggregateError } from "../../shared-kernel/aggregate/error.ts";
+import { AggregateEvent } from "../../shared-kernel/aggregate/event.ts";
 import { AggregateRoot } from "../../shared-kernel/aggregate/root.ts";
 import { assertDefined } from "../../shared-kernel/utils/assert-defined.ts";
 import { ok, Result } from "../../shared-kernel/utils/result.ts";
-import { unreachable } from "../../shared-kernel/utils/unreachable.ts";
 import {
   AttachPaymentMethodCommand,
   DetachPaymentMethodCommand,
@@ -10,7 +10,6 @@ import {
 } from "../api/commands.ts";
 import {
   CustomerCreatedEvent,
-  CustomerEvent,
   CustomerPaymentMethodAttachedEvent,
   CustomerPaymentMethodDetachedEvent,
 } from "../api/events.ts";
@@ -29,18 +28,13 @@ interface CustomerAggregateState {
   }[];
 }
 
-export class CustomerAggregate extends AggregateRoot<CustomerEvent> {
-  static create(
-    command: EnsureCustomerCommand,
-  ): Result<CustomerAggregate> {
-    const id = command.payload.userId;
-    const aggregate = new CustomerAggregate(id);
-    aggregate.applyChange(
-      new CustomerCreatedEvent({
-        displayName: command.payload.displayName,
-        email: command.payload.email,
-      }),
-    );
+export class CustomerAggregate extends AggregateRoot {
+  static create(command: EnsureCustomerCommand): Result<CustomerAggregate> {
+    const aggregate = new CustomerAggregate(command.payload.aggregateId);
+    aggregate.applyChange(CustomerCreatedEvent, {
+      displayName: command.payload.displayName,
+      email: command.payload.email,
+    });
     return ok(aggregate);
   }
 
@@ -60,11 +54,9 @@ export class CustomerAggregate extends AggregateRoot<CustomerEvent> {
         new PaymentMethodAlreadyAttachedError(command.payload.paymentMethod.id),
       );
     }
-    this.applyChange(
-      new CustomerPaymentMethodAttachedEvent({
-        paymentMethod: command.payload.paymentMethod,
-      }),
-    );
+    this.applyChange(CustomerPaymentMethodAttachedEvent, {
+      paymentMethod: command.payload.paymentMethod,
+    });
     return ok();
   }
 
@@ -80,38 +72,32 @@ export class CustomerAggregate extends AggregateRoot<CustomerEvent> {
         new PaymentMethodNotAttachedError(command.payload.paymentMethodId),
       );
     }
-    this.applyChange(
-      new CustomerPaymentMethodDetachedEvent({
-        paymentMethodId: command.payload.paymentMethodId,
-      }),
-    );
+    this.applyChange(CustomerPaymentMethodDetachedEvent, {
+      paymentMethodId: command.payload.paymentMethodId,
+    });
     return ok();
   }
 
-  protected apply(event: CustomerEvent): void {
-    switch (event.name) {
-      case "CustomerCreated": {
-        this.state = {
-          displayName: event.payload.displayName,
-          email: event.payload.email,
-          paymentMethods: [],
-        };
-        break;
-      }
-      case "CustomerPaymentMethodAttached": {
-        assertDefined(this.state);
-        this.state.paymentMethods.push(event.payload.paymentMethod);
-        break;
-      }
-      case "CustomerPaymentMethodDetached": {
-        assertDefined(this.state);
-        this.state.paymentMethods = this.state.paymentMethods.filter(
-          (pm) => pm.id !== event.payload.paymentMethodId,
-        );
-        break;
-      }
-      default:
-        unreachable(event);
+  protected apply(event: AggregateEvent): void {
+    if (CustomerCreatedEvent.match(event)) {
+      this.state = {
+        displayName: event.payload.displayName,
+        email: event.payload.email,
+        paymentMethods: [],
+      };
+      return;
+    }
+    if (CustomerPaymentMethodAttachedEvent.match(event)) {
+      assertDefined(this.state);
+      this.state.paymentMethods.push(event.payload.paymentMethod);
+      return;
+    }
+    if (CustomerPaymentMethodDetachedEvent.match(event)) {
+      assertDefined(this.state);
+      this.state.paymentMethods = this.state.paymentMethods.filter(
+        (pm) => pm.id !== event.payload.paymentMethodId,
+      );
+      return;
     }
   }
 }
