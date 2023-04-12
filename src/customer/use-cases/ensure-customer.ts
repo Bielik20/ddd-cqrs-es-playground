@@ -7,7 +7,7 @@ export class EnsureCustomerUseCase {
   constructor(private readonly gateway: CustomerAggregateGateway) {}
 
   async run(command: EnsureCustomerCommand) {
-    const exists = await this.gateway.exists(command.payload.userId);
+    const exists = await this.gateway.exists(command.payload.aggregateId);
     if (exists) {
       return;
     }

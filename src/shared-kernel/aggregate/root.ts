@@ -1,28 +1,26 @@
 import { err, Result } from "./../utils/result.ts";
-import { AggregateEvent } from "./event.ts";
 import { AggregateError } from "./error.ts";
+import { AggregateEvent } from "./event.ts";
 
-export abstract class AggregateRoot<
-  TEvent extends AggregateEvent = AggregateEvent,
-> {
+export abstract class AggregateRoot {
   private _version = -1;
   get version(): number {
     return this._version;
   }
 
-  private _changes: TEvent[] = [];
+  private _changes: AggregateEvent[] = [];
   abstract readonly name: string;
 
   constructor(readonly id: string) {}
 
-  reject(error: AggregateError<any>): Result<never, AggregateError> {
+  reject<T extends AggregateError>(error: T): Result<never, T> {
     error.aggregateName = this.name;
     error.aggregateId = this.id;
     error.aggregateVersion = this.version;
     return err(error);
   }
 
-  getUncommittedChanges(): TEvent[] {
+  getUncommittedChanges(): AggregateEvent[] {
     return [...this._changes];
   }
 
@@ -30,7 +28,7 @@ export abstract class AggregateRoot<
     this._changes = [];
   }
 
-  loadFromHistory(history: TEvent[]) {
+  loadFromHistory(history: AggregateEvent[]) {
     if (this.version !== -1) {
       throw new Error("Aggregate already loaded!");
     }
@@ -43,17 +41,16 @@ export abstract class AggregateRoot<
     this._version = lastEvent.aggregateVersion;
   }
 
-  private applyHistoricalChange(event: TEvent) {
+  private applyHistoricalChange(event: AggregateEvent) {
     this.apply(event);
   }
 
-  protected applyChange(event: TEvent) {
-    event.aggregateName = this.name;
+  protected applyChange(event: AggregateEvent) {
     event.aggregateId = this.id;
     event.aggregateVersion = ++this._version;
     this.apply(event);
     this._changes.push(event);
   }
 
-  protected abstract apply(event: TEvent): void;
+  protected abstract apply(event: AggregateEvent): void;
 }

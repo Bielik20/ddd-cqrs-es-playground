@@ -1,47 +1,18 @@
-import { AggregateEvent } from "../../shared-kernel/aggregate/event.ts";
+import { event } from "../../shared-kernel/aggregate/event.ts";
 
-interface CustomerCreatedPayload {
+export class CustomerCreatedEvent extends event<{
   displayName: string;
   email: string;
-}
-export class CustomerCreatedEvent extends AggregateEvent<
-  "CustomerCreated",
-  CustomerCreatedPayload
-> {
-  constructor(payload: CustomerCreatedPayload) {
-    super("CustomerCreated", payload);
-  }
-}
+}>("Customer", "CustomerCreated") {}
 
-interface CustomerPaymentMethodAttachedPayload {
+export class CustomerPaymentMethodAttachedEvent extends event<{
   paymentMethod: {
     id: string;
     ownerName: string;
     last4Digits: string;
   };
-}
-export class CustomerPaymentMethodAttachedEvent extends AggregateEvent<
-  "CustomerPaymentMethodAttached",
-  CustomerPaymentMethodAttachedPayload
-> {
-  constructor(payload: CustomerPaymentMethodAttachedPayload) {
-    super("CustomerPaymentMethodAttached", payload);
-  }
-}
+}>("Customer", "CustomerPaymentMethodAttached") {}
 
-interface CustomerPaymentMethodDetachedPayload {
+export class CustomerPaymentMethodDetachedEvent extends event<{
   paymentMethodId: string;
-}
-export class CustomerPaymentMethodDetachedEvent extends AggregateEvent<
-  "CustomerPaymentMethodDetached",
-  CustomerPaymentMethodDetachedPayload
-> {
-  constructor(payload: CustomerPaymentMethodDetachedPayload) {
-    super("CustomerPaymentMethodDetached", payload);
-  }
-}
-
-export type CustomerEvent =
-  | CustomerCreatedEvent
-  | CustomerPaymentMethodAttachedEvent
-  | CustomerPaymentMethodDetachedEvent;
+}>("Customer", "CustomerPaymentMethodDetached") {}
