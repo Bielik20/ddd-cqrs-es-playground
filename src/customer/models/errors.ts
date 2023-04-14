@@ -1,4 +1,4 @@
-import { AggregateError } from "../../shared-kernel/aggregate/error.ts";
+import { AggregateError } from "../../shared/models/error.ts";
 
 export class PaymentMethodAlreadyAttachedError
   extends AggregateError<"PaymentMethodAlreadyAttached"> {

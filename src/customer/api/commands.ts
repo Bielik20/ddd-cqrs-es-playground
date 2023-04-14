@@ -1,4 +1,4 @@
-import { command } from "../../shared-kernel/aggregate/command.ts";
+import { command } from "../../shared/models/command.ts";
 
 export class EnsureCustomerCommand extends command<{
   aggregateId: string;

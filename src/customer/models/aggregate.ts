@@ -1,8 +1,8 @@
-import { AggregateEvent } from "../../shared-kernel/aggregate/event.ts";
-import { AggregateRoot } from "../../shared-kernel/aggregate/root.ts";
-import { Message } from "../../shared-kernel/messages/message.ts";
-import { assertDefined } from "../../shared-kernel/utils/assert-defined.ts";
-import { ok, Result } from "../../shared-kernel/utils/result.ts";
+import { AggregateEvent } from "../../shared/models/event.ts";
+import { Aggregate } from "../../shared/models/aggregate.ts";
+import { Message } from "../../shared/messages/message.ts";
+import { assertDefined } from "../../shared/utils/assert-defined.ts";
+import { ok, Result } from "../../shared/utils/result.ts";
 import {
   AttachPaymentMethodCommand,
   DetachPaymentMethodCommand,
@@ -28,7 +28,7 @@ interface CustomerAggregateState {
   }[];
 }
 
-export class CustomerAggregate extends AggregateRoot {
+export class CustomerAggregate extends Aggregate {
   static create(command: EnsureCustomerCommand): Result<CustomerAggregate> {
     const aggregate = new CustomerAggregate(command.payload.aggregateId);
     aggregate.applyChange(

@@ -1,8 +1,8 @@
 import { MessageBroker } from "../messages/message-broker.ts";
 import { AggregateEvent } from "./event.ts";
-import { AggregateRoot } from "./root.ts";
+import { Aggregate } from "./aggregate.ts";
 
-export class AggregateGateway<T extends AggregateRoot> {
+export class AggregateGateway<T extends Aggregate> {
   constructor(
     private factory: (id: string) => T,
     private readonly messagesBroker: MessageBroker,

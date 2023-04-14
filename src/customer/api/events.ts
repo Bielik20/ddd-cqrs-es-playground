@@ -1,4 +1,4 @@
-import { event } from "../../shared-kernel/aggregate/event.ts";
+import { event } from "../../shared/models/event.ts";
 
 export class CustomerCreatedEvent extends event<{
   displayName: string;

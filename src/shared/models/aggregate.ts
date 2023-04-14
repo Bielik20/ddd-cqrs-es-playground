@@ -2,7 +2,7 @@ import { err, Result } from "./../utils/result.ts";
 import { AggregateError } from "./error.ts";
 import { AggregateEvent } from "./event.ts";
 
-export abstract class AggregateRoot {
+export abstract class Aggregate {
   private _version = -1;
   get version(): number {
     return this._version;
