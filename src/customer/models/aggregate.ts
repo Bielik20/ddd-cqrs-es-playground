@@ -68,8 +68,8 @@ export class CustomerAggregate extends Aggregate {
     command: DetachPaymentMethodCommand,
   ): Result<void, PaymentMethodNotAttachedError> {
     assertDefined(this.state);
-    const paymentMethods = this.state.paymentMethods.find((x) =>
-      x.id !== command.payload.paymentMethodId
+    const paymentMethods = this.state.paymentMethods.find(
+      (x) => x.id !== command.payload.paymentMethodId,
     );
     if (!paymentMethods) {
       return this.reject(
@@ -85,7 +85,7 @@ export class CustomerAggregate extends Aggregate {
   }
 
   protected apply(event: AggregateEvent): void {
-    if (Message.match(CustomerCreatedEvent, event)) {
+    if (Message.match(event, CustomerCreatedEvent)) {
       this.state = {
         displayName: event.payload.displayName,
         email: event.payload.email,
@@ -93,12 +93,12 @@ export class CustomerAggregate extends Aggregate {
       };
       return;
     }
-    if (Message.match(CustomerPaymentMethodAttachedEvent, event)) {
+    if (Message.match(event, CustomerPaymentMethodAttachedEvent)) {
       assertDefined(this.state);
       this.state.paymentMethods.push(event.payload.paymentMethod);
       return;
     }
-    if (Message.match(CustomerPaymentMethodDetachedEvent, event)) {
+    if (Message.match(event, CustomerPaymentMethodDetachedEvent)) {
       assertDefined(this.state);
       this.state.paymentMethods = this.state.paymentMethods.filter(
         (pm) => pm.id !== event.payload.paymentMethodId,

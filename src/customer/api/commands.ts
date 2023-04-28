@@ -1,4 +1,5 @@
 import { command } from "../../shared/models/command.ts";
+import { CustomerPaymentMethod } from "./shared.ts";
 
 export class EnsureCustomerCommand extends command<{
   aggregateId: string;
@@ -8,11 +9,7 @@ export class EnsureCustomerCommand extends command<{
 
 export class AttachPaymentMethodCommand extends command<{
   aggregateId: string;
-  paymentMethod: {
-    id: string;
-    ownerName: string;
-    last4Digits: string;
-  };
+  paymentMethod: CustomerPaymentMethod;
 }>("Customer", "AttachPaymentMethod") {}
 
 export class DetachPaymentMethodCommand extends command<{

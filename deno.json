@@ -3,9 +3,14 @@
     "emitDecoratorMetadata": true
   },
   "imports": {
-    "nanoid": "https://deno.land/x/nanoid/mod.ts"
+    "nanoid": "https://deno.land/x/nanoid@v3.0.0/mod.ts"
   },
   "tasks": {
     "dev": "deno run --watch main.ts"
+  },
+  "lint": {
+    "rules": {
+      "exclude": ["no-explicit-any", "require-await"]
+    }
   }
 }

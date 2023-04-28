@@ -1,7 +1,7 @@
-import { err, ok } from "../../../shared/utils/result.ts";
-import { CustomerAggregateGateway } from "../../gateways/customer-aggregate-gateway.ts";
-import { CustomerAggregate } from "../../models/aggregate.ts";
-import { EnsureCustomerCommand } from "../../api/commands.ts";
+import { err, ok } from "../../../../shared/utils/result.ts";
+import { CustomerAggregateGateway } from "../../../gateways/customer-aggregate-gateway.ts";
+import { CustomerAggregate } from "../../../models/aggregate.ts";
+import { EnsureCustomerCommand } from "../../../api/commands.ts";
 
 export class EnsureCustomerUseCase {
   constructor(private readonly gateway: CustomerAggregateGateway) {}

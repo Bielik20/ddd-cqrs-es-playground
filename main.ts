@@ -1,6 +1,6 @@
 import { CustomerAggregateGateway } from "./src/customer/gateways/customer-aggregate-gateway.ts";
 import { EnsureCustomerCommand } from "./src/customer/api/commands.ts";
-import { EnsureCustomerUseCase } from "./src/customer/handlers/ensure-customer/use-case.ts";
+import { EnsureCustomerUseCase } from "./src/customer/handlers/commands/ensure-customer/use-case.ts";
 import { MessageBroker } from "./src/shared/messages/message-broker.ts";
 
 export function add(a: number, b: number): number {

@@ -1,4 +1,5 @@
 import { event } from "../../shared/models/event.ts";
+import { CustomerPaymentMethod } from "./shared.ts";
 
 export class CustomerCreatedEvent extends event<{
   displayName: string;
@@ -6,11 +7,7 @@ export class CustomerCreatedEvent extends event<{
 }>("Customer", "CustomerCreated") {}
 
 export class CustomerPaymentMethodAttachedEvent extends event<{
-  paymentMethod: {
-    id: string;
-    ownerName: string;
-    last4Digits: string;
-  };
+  paymentMethod: CustomerPaymentMethod;
 }>("Customer", "CustomerPaymentMethodAttached") {}
 
 export class CustomerPaymentMethodDetachedEvent extends event<{

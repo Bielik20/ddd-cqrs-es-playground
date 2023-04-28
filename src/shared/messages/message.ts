@@ -11,8 +11,8 @@ export abstract class Message<
   TPayload extends Record<string, any> = Record<string, any>,
 > {
   static match<T extends Message>(
-    constructor: Matchable<T>,
     event: Message,
+    constructor: Matchable<T>,
   ): event is T {
     return constructor.messageName === event.name;
   }
