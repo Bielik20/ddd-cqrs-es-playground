@@ -2,7 +2,7 @@ import { nanoid } from "nanoid";
 import { Constructor } from "../utils/constructor.ts";
 import { Immutable } from "../utils/immutable.ts";
 
-type Matchable<T extends Message> = Constructor<T> & {
+export type Matchable<T extends Message> = Constructor<T> & {
   readonly messageName: T["name"];
 };
 
