@@ -8,8 +8,7 @@ type CustomErrorConstructor<
   cause?: Error;
 } & TPayload;
 
-type ConditionalName<TName extends string> = TName extends "Error"
-  ? { name?: never }
+type ConditionalName<TName extends string> = TName extends "Error" ? { name?: never }
   : { name: TName };
 
 export class CustomError<

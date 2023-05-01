@@ -13,10 +13,7 @@ import {
   CustomerPaymentMethodAttachedEvent,
   CustomerPaymentMethodDetachedEvent,
 } from "../api/events.ts";
-import {
-  PaymentMethodAlreadyAttachedError,
-  PaymentMethodNotAttachedError,
-} from "./errors.ts";
+import { PaymentMethodAlreadyAttachedError, PaymentMethodNotAttachedError } from "./errors.ts";
 
 interface CustomerAggregateState {
   displayName: string;
@@ -48,9 +45,7 @@ export class CustomerAggregate extends Aggregate {
   ): Result<void, PaymentMethodAlreadyAttachedError> {
     assertDefined(this.state);
     if (
-      this.state.paymentMethods.find((x) =>
-        x.id === command.payload.paymentMethod.id
-      )
+      this.state.paymentMethods.find((x) => x.id === command.payload.paymentMethod.id)
     ) {
       return this.reject(
         new PaymentMethodAlreadyAttachedError(command.payload.paymentMethod.id),

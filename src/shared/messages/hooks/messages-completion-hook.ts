@@ -1,5 +1,5 @@
-import { deferred, Deferred } from 'https://deno.land/std@0.185.0/async/deferred.ts';
-import { MessageBrokerHook } from '../message-broker.ts';
+import { Deferred, deferred } from "https://deno.land/std@0.185.0/async/deferred.ts";
+import { MessageBrokerHook } from "../message-broker.ts";
 
 export class MessagesCompletionHook implements MessageBrokerHook {
   private deferrer: Deferred<void>;

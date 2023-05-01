@@ -7,8 +7,7 @@ export class PaymentMethodAlreadyAttachedError
   }
 }
 
-export class PaymentMethodNotAttachedError
-  extends AggregateError<"PaymentMethodNotAttached"> {
+export class PaymentMethodNotAttachedError extends AggregateError<"PaymentMethodNotAttached"> {
   constructor(readonly paymentMethodId: string) {
     super("PaymentMethodNotAttached");
   }

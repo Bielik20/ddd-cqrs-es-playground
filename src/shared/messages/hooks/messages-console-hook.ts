@@ -1,5 +1,5 @@
-import { MessageBrokerHook } from '../message-broker.ts';
-import { Message } from '../message.ts';
+import { MessageBrokerHook } from "../message-broker.ts";
+import { Message } from "../message.ts";
 
 export class MessagesConsoleHook implements MessageBrokerHook {
   before(message: Message) {

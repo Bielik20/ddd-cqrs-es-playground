@@ -5,7 +5,7 @@ export class GetCustomerUseCase {
   constructor(private readonly gateway: CustomerProjectionGateway) {}
 
   async run(query: GetCustomerQuery): Promise<GetCustomerResult | undefined> {
-    const customer = await this.gateway.get(query.id);
+    const customer = await this.gateway.get(query.payload.id);
     if (!customer) {
       return;
     }

@@ -1,4 +1,4 @@
-import { Matchable, Message } from './message.ts';
+import { Matchable, Message } from "./message.ts";
 
 type Callback<TMessage extends Message> = (message: TMessage) => any;
 
@@ -31,4 +31,3 @@ export class MessageBroker {
     this.subscribers.set(constructor.messageName, callbacks);
   }
 }
-

@@ -45,9 +45,7 @@ class AggregateEventStoreGateway {
 
     const savedEvents = this.secureRead(aggregateId);
     if (
-      savedEvents.find((e) =>
-        e.aggregateVersion === firstEventToSave.aggregateVersion
-      )
+      savedEvents.find((e) => e.aggregateVersion === firstEventToSave.aggregateVersion)
     ) {
       throw new Error(
         "Concurrency Error - Cannot perform the operation due to internal conflict",
