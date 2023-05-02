@@ -84,11 +84,7 @@ Run these commands to get started:
 
 ## TODO
 
-- Add handling program in `main.ts` - map `Command` `Query` `Event` to to `UseCase`, `Projector`.
 - Add examples of side effects (listening on `Event` and executing `Command`)
 - Add examples of Sagas (having operation spanning multiple `Command`s and `Event`s with revert
   mechanism)
-- Add reducers for aggregates and projections - I think it would be good to express state changes in
-  a a form of reducer function.
 - Add a `Command`, `Query`, `Event` parsing and validation (zod?)
-  - perhaps make `Query` extend `Message` as well?

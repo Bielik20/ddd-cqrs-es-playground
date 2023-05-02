@@ -1,6 +1,5 @@
 import { nanoid } from "nanoid";
 import { Constructor } from "../utils/constructor.ts";
-import { Immutable } from "../utils/immutable.ts";
 
 export type Matchable<T extends Message> = Constructor<T> & {
   readonly messageName: T["name"];
@@ -22,7 +21,7 @@ export abstract class Message<
 
   protected constructor(
     readonly name: TName,
-    readonly payload: Immutable<TPayload>,
+    readonly payload: Readonly<TPayload>,
   ) {}
 }
 

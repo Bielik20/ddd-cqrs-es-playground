@@ -1,6 +1,6 @@
 import { assertEquals } from "https://deno.land/std@0.178.0/testing/asserts.ts";
 import { message } from "./message.ts";
-import { on, reducer } from "./message-reducer.ts";
+import { on, reducer, state } from "./message-reducer.ts";
 import { assertDefined } from "../utils/assert-defined.ts";
 
 class FooMessage extends message<{ name: string }>("Foo") {}
@@ -11,7 +11,7 @@ interface SampleState {
   age: number;
 }
 
-const sampleStateReducer = reducer<SampleState | undefined>([
+const sampleStateReducer = reducer(state<SampleState | null>(), [
   on(FooMessage, (_, message) => {
     const a: SampleState = {
       name: message.payload.name,
@@ -26,7 +26,7 @@ const sampleStateReducer = reducer<SampleState | undefined>([
 ]);
 
 Deno.test(function withSimpleCalls() {
-  let result = undefined;
+  let result = null;
   result = sampleStateReducer(result, new FooMessage({ name: "Ned" }));
   result = sampleStateReducer(result, new BarMessage({ age: 123 }));
 
@@ -37,7 +37,7 @@ Deno.test(function withReduceFunction() {
   const result = [new FooMessage({ name: "Ned" }), new BarMessage({ age: 123 })]
     .reduce(
       sampleStateReducer,
-      undefined,
+      null,
     );
 
   assertEquals(result, { name: "Ned", age: 123 });

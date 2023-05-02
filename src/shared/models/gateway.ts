@@ -2,7 +2,7 @@ import { MessageBroker } from "../messages/message-broker.ts";
 import { AggregateEvent } from "./event.ts";
 import { Aggregate } from "./aggregate.ts";
 
-export class AggregateGateway<T extends Aggregate> {
+export class AggregateGateway<T extends Aggregate<any, any>> {
   constructor(
     private factory: (id: string) => T,
     private readonly messagesBroker: MessageBroker,
@@ -24,9 +24,9 @@ export class AggregateGateway<T extends Aggregate> {
 
   async get(id: string): Promise<T> {
     const history = this.eventStore.get(id);
-    const domainObject = this.factory(id);
-    domainObject.loadFromHistory(history);
-    return domainObject;
+    const aggregate = this.factory(id);
+    aggregate.loadFromHistory(history);
+    return aggregate;
   }
 }
 
@@ -44,12 +44,8 @@ class AggregateEventStoreGateway {
     }
 
     const savedEvents = this.secureRead(aggregateId);
-    if (
-      savedEvents.find((e) => e.aggregateVersion === firstEventToSave.aggregateVersion)
-    ) {
-      throw new Error(
-        "Concurrency Error - Cannot perform the operation due to internal conflict",
-      );
+    if (savedEvents.find((e) => e.aggregateVersion === firstEventToSave.aggregateVersion)) {
+      throw new Error("Concurrency Error - Cannot perform the operation due to internal conflict");
     }
 
     this.map.set(aggregateId, [...savedEvents, ...eventsToSave]);
