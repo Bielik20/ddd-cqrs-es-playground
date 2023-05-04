@@ -13,11 +13,14 @@ type OnDescriptorsMessages<TOnDescriptors> = TOnDescriptors extends
   OnDescriptor<infer TState, infer TMessage>[] ? Parameters<TOnDescriptors[number][string]>[1]
   : never;
 
-export type ReducerStateProducer<TState> = (
-  state: TState,
-  message: Message,
-  handler: ReducerMessageHandler<TState, Message>,
-) => TState;
+export type ReducerStateManager<TState> = {
+  produce: (
+    state: TState,
+    message: Message,
+    handler: ReducerMessageHandler<TState, Message>,
+  ) => TState;
+  initial: () => TState;
+}
 
 /**
  * This function serves two purposes:
@@ -27,10 +30,13 @@ export type ReducerStateProducer<TState> = (
  * @see https://github.com/microsoft/TypeScript/issues/26242
  * @see https://immerjs.github.io/immer/docs/introduction
  */
-export function state<TState>(): ReducerStateProducer<TState> {
-  return (state, message, handler) => {
-    const result = handler(state, message);
-    return result === undefined ? state : result;
+export function state<TState>(initial: TState): ReducerStateManager<TState> {
+  return {
+    produce: (state, message, handler) => {
+      const result = handler(state, message);
+      return result === undefined ? state : result;
+    },
+    initial: () => structuredClone(initial),
   };
 }
 
@@ -43,22 +49,25 @@ export function on<TState, TMessage extends Message>(
   };
 }
 
-export type Reducer<TState, TMessage extends Message> = (
+export type Reducer<TState, TMessage extends Message> = ((
   state: TState,
   message: TMessage,
-) => TState;
+) => TState) & { initial: () => TState };
 export type ReducerMessage<T> = T extends Reducer<any, infer TMessage> ? TMessage : never;
 export type ReducerState<T> = T extends Reducer<infer TState, any> ? TState : never;
 
 export function reducer<TState, THandlers extends OnDescriptor<TState, any>[]>(
-  producer: ReducerStateProducer<TState>,
+  manager: ReducerStateManager<TState>,
   handlers: THandlers,
 ): Reducer<TState, OnDescriptorsMessages<THandlers>> {
   const obj = handlers.reduce((acc, curr) => {
     return { ...acc, ...curr };
   }, {});
-  return (state, message) => {
+  const result: Reducer<TState, OnDescriptorsMessages<THandlers>> = (state, message) => {
     const handler = obj[message.name];
-    return producer(state, message, handler);
+    return manager.produce(state, message, handler);
   };
+  result['initial'] = manager.initial;
+
+  return result;
 }

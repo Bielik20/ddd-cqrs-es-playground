@@ -11,7 +11,7 @@ interface SampleState {
   age: number;
 }
 
-const sampleStateReducer = reducer(state<SampleState | null>(), [
+const sampleStateReducer = reducer(state<SampleState | null>(null), [
   on(FooMessage, (_, message) => {
     const a: SampleState = {
       name: message.payload.name,
