@@ -84,6 +84,7 @@ Run these commands to get started:
 
 ## TODO
 
+- Reducer should contain initial state
 - Add examples of side effects (listening on `Event` and executing `Command`)
 - Add examples of Sagas (having operation spanning multiple `Command`s and `Event`s with revert
   mechanism)
