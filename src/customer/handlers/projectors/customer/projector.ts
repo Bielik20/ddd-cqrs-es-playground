@@ -9,7 +9,7 @@ import { assertDefined } from "../../../../shared/utils/assert-defined.ts";
 import { on, reducer, ReducerMessage, state } from "../../../../shared/messages/message-reducer.ts";
 
 export class CustomerProjector {
-  private readonly reducer = reducer(state<CustomerProjection | null>(), [
+  private readonly reducer = reducer(state<CustomerProjection | null>(null), [
     on(CustomerCreatedEvent, (_, event) => ({
       id: event.aggregateId,
       paymentMethods: [],
@@ -31,7 +31,7 @@ export class CustomerProjector {
   constructor(private readonly gateway: CustomerProjectionGateway) {}
 
   async run(event: ReducerMessage<typeof this.reducer>): Promise<void> {
-    const initialState = (await this.gateway.get(event.aggregateId)) || null;
+    const initialState = (await this.gateway.get(event.aggregateId)) || this.reducer.initial();
     const value = this.reducer(initialState, event);
     assertDefined(value);
     await this.gateway.save(value);

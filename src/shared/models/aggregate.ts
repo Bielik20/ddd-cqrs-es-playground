@@ -26,9 +26,8 @@ export abstract class Aggregate<TState, TEvent extends AggregateEvent> {
   constructor(
     readonly id: string,
     private readonly reducer: Reducer<TState, TEvent>,
-    initialState: TState,
   ) {
-    this._state = initialState;
+    this._state = reducer.initial();
   }
 
   getUncommittedChanges(): TEvent[] {
@@ -70,13 +69,12 @@ export abstract class Aggregate<TState, TEvent extends AggregateEvent> {
 export function aggregate<TState, TEvent extends AggregateEvent>(
   name: string,
   reducer: Reducer<TState, TEvent>,
-  initialState: TState,
 ) {
   abstract class AggregateMixin extends Aggregate<TState, TEvent> {
     override readonly name = name;
 
     constructor(id: string) {
-      super(id, reducer, initialState);
+      super(id, reducer);
     }
   }
 

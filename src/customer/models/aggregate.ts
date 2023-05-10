@@ -27,7 +27,7 @@ interface CustomerAggregateState {
 
 export class CustomerAggregate extends aggregate(
   "Customer",
-  reducer(state<CustomerAggregateState | null>(), [
+  reducer(state<CustomerAggregateState | null>(null), [
     on(CustomerCreatedEvent, (_, event) => ({
       id: event.aggregateId,
       paymentMethods: [],
@@ -45,7 +45,6 @@ export class CustomerAggregate extends aggregate(
       );
     }),
   ]),
-  null,
 ) {
   static create(command: EnsureCustomerCommand): Result<CustomerAggregate> {
     const aggregate = new CustomerAggregate(command.payload.aggregateId);
