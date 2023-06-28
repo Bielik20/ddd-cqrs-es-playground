@@ -1,9 +1,11 @@
+import { payload } from "./message-payload.ts";
 import { message } from "./message.ts";
 import { on, reducer, state } from "./message-reducer.ts";
 import { assertDefined } from "../utils/assert-defined.ts";
+import { number, string } from "zod";
 
-class FooMessage extends message<{ name: string }>("Foo") {}
-class BarMessage extends message<{ age: number }>("Bar") {}
+class FooMessage extends message("Foo", payload({ name: string() })) {}
+class BarMessage extends message("Bar", payload({ age: number() })) {}
 
 interface SampleState {
   name: string;

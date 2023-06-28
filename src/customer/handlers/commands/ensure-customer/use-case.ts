@@ -1,7 +1,7 @@
-import { err, ok } from "../../../../shared/utils/result.ts";
+import { Result } from "../../../../shared/utils/result.ts";
+import { EnsureCustomerCommand } from "../../../api/commands.ts";
 import { CustomerAggregateGateway } from "../../../gateways/customer-aggregate-gateway.ts";
 import { CustomerAggregate } from "../../../models/aggregate.ts";
-import { EnsureCustomerCommand } from "../../../api/commands.ts";
 
 export class EnsureCustomerUseCase {
   constructor(private readonly gateway: CustomerAggregateGateway) {}
@@ -12,13 +12,11 @@ export class EnsureCustomerUseCase {
       return;
     }
 
-    const [aggregate, error] = CustomerAggregate.create(
-      command,
-    );
+    const [aggregate, error] = CustomerAggregate.create(command);
     if (error) {
-      return err(error);
+      return Result.error(error);
     }
     await this.gateway.save(aggregate);
-    return ok();
+    return Result.ok();
   }
 }

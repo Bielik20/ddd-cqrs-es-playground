@@ -1,18 +1,18 @@
-import { PaymentMethodAlreadyAttachedError, PaymentMethodNotAttachedError } from "./errors.ts";
-import {
-  CustomerCreatedEvent,
-  CustomerPaymentMethodAttachedEvent,
-  CustomerPaymentMethodDetachedEvent,
-} from "../api/events.ts";
+import { on, reducer, state } from "../../shared/messages/message-reducer.ts";
+import { aggregate } from "../../shared/models/aggregate.ts";
+import { assertDefined } from "../../shared/utils/assert-defined.ts";
+import { Result } from "../../shared/utils/result.ts";
 import {
   AttachPaymentMethodCommand,
   DetachPaymentMethodCommand,
   EnsureCustomerCommand,
 } from "../api/commands.ts";
-import { ok, Result } from "../../shared/utils/result.ts";
-import { assertDefined } from "../../shared/utils/assert-defined.ts";
-import { aggregate } from "../../shared/models/aggregate.ts";
-import { on, reducer, state } from "../../shared/messages/message-reducer.ts";
+import {
+  CustomerCreatedEvent,
+  CustomerPaymentMethodAttachedEvent,
+  CustomerPaymentMethodDetachedEvent,
+} from "../api/events.ts";
+import { PaymentMethodAlreadyAttachedError, PaymentMethodNotAttachedError } from "./errors.ts";
 
 interface CustomerAggregateState {
   id: string;
@@ -54,7 +54,7 @@ export class CustomerAggregate extends aggregate(
         email: command.payload.email,
       }),
     );
-    return ok(aggregate);
+    return Result.ok(aggregate);
   }
 
   attachPaymentMethod(
@@ -69,7 +69,7 @@ export class CustomerAggregate extends aggregate(
         paymentMethod: command.payload.paymentMethod,
       }),
     );
-    return ok();
+    return Result.ok();
   }
 
   detachPaymentMethod(
@@ -87,6 +87,6 @@ export class CustomerAggregate extends aggregate(
         paymentMethodId: command.payload.paymentMethodId,
       }),
     );
-    return ok();
+    return Result.ok();
   }
 }

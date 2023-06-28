@@ -1,3 +1,4 @@
+import { MessagePayloadValidator } from "../messages/message-payload.ts";
 import { Message } from "../messages/message.ts";
 
 export abstract class AggregateEvent<
@@ -10,25 +11,24 @@ export abstract class AggregateEvent<
   protected constructor(
     readonly aggregateName: string,
     name: TName,
-    payload: TPayload,
+    payload: Readonly<TPayload>,
+    id?: string,
+    timestamp?: number,
   ) {
-    super(name, payload);
+    super(name, payload, id, timestamp);
   }
 }
 
-/**
- * name is not correctly inferred due to:
- * https://github.com/microsoft/TypeScript/issues/26242
- */
 export function event<
   TPayload extends Record<string, any>,
   TName extends string = string,
->(aggregateName: string, name: TName) {
+>(aggregateName: string, name: TName, validator: MessagePayloadValidator<TPayload>) {
   class AggregateEventMixin extends AggregateEvent<TName, TPayload> {
     static readonly messageName: TName = name;
+    static readonly validator: MessagePayloadValidator<TPayload> = validator;
 
-    constructor(payload: TPayload) {
-      super(aggregateName, name, payload);
+    constructor(payload: TPayload, id?: string, timestamp?: number) {
+      super(aggregateName, name, payload, id, timestamp);
     }
   }
 
