@@ -1,4 +1,4 @@
-import { err, ok } from "../../../../shared/utils/result.ts";
+import { Result } from "../../../../shared/utils/result.ts";
 import { DetachPaymentMethodCommand } from "../../../api/commands.ts";
 import { CustomerAggregateGateway } from "../../../gateways/customer-aggregate-gateway.ts";
 
@@ -11,9 +11,9 @@ export class DetachPaymentMethodUseCase {
     const [, error] = aggregate.detachPaymentMethod(command);
 
     if (error) {
-      return err(error);
+      return Result.err(error);
     }
     await this.gateway.save(aggregate);
-    return ok();
+    return Result.ok();
   }
 }

@@ -1,11 +1,9 @@
 import { Reducer } from "../messages/message-reducer.ts";
-import { err, Result } from "./../utils/result.ts";
+import { Result } from "./../utils/result.ts";
 import { AggregateError } from "./error.ts";
 import { AggregateEvent } from "./event.ts";
 
 export abstract class Aggregate<TState, TEvent extends AggregateEvent> {
-  abstract readonly name: string;
-
   get version(): number {
     return this._version;
   }
@@ -25,6 +23,7 @@ export abstract class Aggregate<TState, TEvent extends AggregateEvent> {
 
   constructor(
     readonly id: string,
+    readonly name: string,
     private readonly reducer: Reducer<TState, TEvent>,
   ) {
     this._state = reducer.initial();
@@ -40,11 +39,11 @@ export abstract class Aggregate<TState, TEvent extends AggregateEvent> {
 
   loadFromHistory(history: TEvent[], initialState = this.state): void {
     if (this.version !== -1) {
-      throw new Error("Aggregate already loaded!");
+      throw new Error('Aggregate already loaded!');
     }
     const lastEvent = history.at(-1);
     if (!lastEvent) {
-      throw new Error("Cannot load Aggregate from empty history!");
+      throw new Error('Cannot load Aggregate from empty history!');
     }
 
     this._state = history.reduce(this.reducer, initialState);
@@ -62,7 +61,7 @@ export abstract class Aggregate<TState, TEvent extends AggregateEvent> {
     error.aggregateName = this.name;
     error.aggregateId = this.id;
     error.aggregateVersion = this.version;
-    return err(error);
+    return Result.err(error);
   }
 }
 
@@ -70,13 +69,15 @@ export function aggregate<TState, TEvent extends AggregateEvent>(
   name: string,
   reducer: Reducer<TState, TEvent>,
 ) {
-  abstract class AggregateMixin extends Aggregate<TState, TEvent> {
-    override readonly name = name;
-
+  abstract class AggregateAugmented extends Aggregate<TState, TEvent> {
     constructor(id: string) {
-      super(id, reducer);
+      super(id, name, reducer);
     }
   }
 
-  return AggregateMixin;
+  // workaround for https://github.com/microsoft/TypeScript/issues/30355
+  return AggregateAugmented as typeof Aggregate<TState, TEvent> & {
+    new (id: string): Aggregate<TState, TEvent>;
+  };
 }
+
