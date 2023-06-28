@@ -20,7 +20,7 @@ export type ReducerStateManager<TState> = {
     handler: ReducerMessageHandler<TState, Message>,
   ) => TState;
   initial: () => TState;
-}
+};
 
 /**
  * This function serves two purposes:
@@ -49,14 +49,16 @@ export function on<TState, TMessage extends Message>(
   };
 }
 
-export type Reducer<TState, TMessage extends Message> = ((
-  state: TState,
-  message: TMessage,
-) => TState) & { initial: () => TState };
+export type Reducer<TState, TMessage extends Message> =
+  & ((
+    state: TState,
+    message: TMessage,
+  ) => TState)
+  & { initial: () => TState };
 export type ReducerMessage<T> = T extends Reducer<any, infer TMessage> ? TMessage : never;
 export type ReducerState<T> = T extends Reducer<infer TState, any> ? TState : never;
 
-export function reducer<TState, THandlers extends OnDescriptor<TState, any>[]>(
+export function makeReducer<TState, THandlers extends OnDescriptor<TState, any>[]>(
   manager: ReducerStateManager<TState>,
   handlers: THandlers,
 ): Reducer<TState, OnDescriptorsMessages<THandlers>> {
@@ -67,7 +69,7 @@ export function reducer<TState, THandlers extends OnDescriptor<TState, any>[]>(
     const handler = obj[message.name];
     return manager.produce(state, message, handler);
   };
-  result['initial'] = manager.initial;
+  result["initial"] = manager.initial;
 
   return result;
 }

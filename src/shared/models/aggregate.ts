@@ -1,5 +1,5 @@
 import { Reducer } from "../messages/message-reducer.ts";
-import { err, Result } from "./../utils/result.ts";
+import { Result } from "./../utils/result.ts";
 import { AggregateError } from "./error.ts";
 import { AggregateEvent } from "./event.ts";
 
@@ -62,7 +62,7 @@ export abstract class Aggregate<TState, TEvent extends AggregateEvent> {
     error.aggregateName = this.name;
     error.aggregateId = this.id;
     error.aggregateVersion = this.version;
-    return err(error);
+    return Result.err(error);
   }
 }
 
@@ -70,7 +70,7 @@ export function aggregate<TState, TEvent extends AggregateEvent>(
   name: string,
   reducer: Reducer<TState, TEvent>,
 ) {
-  abstract class AggregateMixin extends Aggregate<TState, TEvent> {
+  abstract class AggregateAugmented extends Aggregate<TState, TEvent> {
     override readonly name = name;
 
     constructor(id: string) {
@@ -78,5 +78,5 @@ export function aggregate<TState, TEvent extends AggregateEvent>(
     }
   }
 
-  return AggregateMixin;
+  return AggregateAugmented;
 }

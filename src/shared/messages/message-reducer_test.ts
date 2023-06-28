@@ -1,17 +1,18 @@
 import { assertEquals } from "https://deno.land/std@0.178.0/testing/asserts.ts";
+import { number, object, string } from "zod";
 import { message } from "./message.ts";
-import { on, reducer, state } from "./message-reducer.ts";
+import { makeReducer, on, state } from "./message-reducer.ts";
 import { assertDefined } from "../utils/assert-defined.ts";
 
-class FooMessage extends message<{ name: string }>("Foo") {}
-class BarMessage extends message<{ age: number }>("Bar") {}
+class FooMessage extends message("Foo", object({ name: string() })) {}
+class BarMessage extends message("Bar", object({ age: number() })) {}
 
 interface SampleState {
   name: string;
   age: number;
 }
 
-const sampleStateReducer = reducer(state<SampleState | null>(null), [
+const sampleStateReducer = makeReducer(state<SampleState | null>(null), [
   on(FooMessage, (_, message) => {
     const a: SampleState = {
       name: message.payload.name,

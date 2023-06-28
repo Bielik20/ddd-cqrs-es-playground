@@ -1,4 +1,6 @@
+import { literal, number, object, string, ZodType } from "zod";
 import { Message } from "../messages/message.ts";
+import { makeSafeParse, SafeParse } from "../validation/safe-parse.ts";
 
 export abstract class AggregateEvent<
   TName extends string = string,
@@ -11,26 +13,43 @@ export abstract class AggregateEvent<
     readonly aggregateName: string,
     name: TName,
     payload: TPayload,
+    aggregateId?: string,
+    aggregateVersion?: number,
+    id?: string,
+    timestamp?: number,
   ) {
-    super(name, payload);
+    super(name, payload, id, timestamp);
+    this.aggregateId = aggregateId!;
+    this.aggregateVersion = aggregateVersion!;
   }
 }
 
-/**
- * name is not correctly inferred due to:
- * https://github.com/microsoft/TypeScript/issues/26242
- */
 export function event<
   TPayload extends Record<string, any>,
   TName extends string = string,
->(aggregateName: string, name: TName) {
-  class AggregateEventMixin extends AggregateEvent<TName, TPayload> {
+>(aggregateName: string, name: TName, payloadSchema: ZodType<TPayload>) {
+  class AggregateEventAugmented extends AggregateEvent<TName, TPayload> {
     static readonly messageName: TName = name;
+    static readonly safeParse = makeSafeParse(object({
+      aggregateVersion: number(),
+      aggregateId: string(),
+      aggregateName: literal(aggregateName),
+      name: literal(name),
+      payload: payloadSchema,
+      id: string(),
+      timestamp: number(),
+    })) as SafeParse<AggregateEventAugmented>;
 
-    constructor(payload: TPayload) {
-      super(aggregateName, name, payload);
+    constructor(
+      payload: TPayload,
+      aggregateId?: string,
+      aggregateVersion?: number,
+      id?: string,
+      timestamp?: number,
+    ) {
+      super(aggregateName, name, payload, aggregateId, aggregateVersion, id, timestamp);
     }
   }
 
-  return AggregateEventMixin;
+  return AggregateEventAugmented;
 }
