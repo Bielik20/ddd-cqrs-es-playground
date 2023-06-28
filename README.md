@@ -88,9 +88,8 @@ Run these commands to get started:
 - Add examples of Sagas (having operation spanning multiple `Command`s and `Event`s with revert
   mechanism)
 - Add a `Command`, `Query`, `Event` parsing and validation (zod?)
-- Add AggregateState snapshotting (serialize and deserialize).
-This will relate to that `structuredClone` we are using for initial right now.
-It would be great if it could handle stuff like `Date` and `Map` and `Set` etc.
-Possible libs:
+- Add AggregateState snapshotting (serialize and deserialize). This will relate to that
+  `structuredClone` we are using for initial right now. It would be great if it could handle stuff
+  like `Date` and `Map` and `Set` etc. Possible libs:
   - https://www.npmjs.com/package/@ungap/structured-clone
   - https://www.npmjs.com/package/@hyurl/structured-clone
