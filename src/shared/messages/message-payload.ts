@@ -2,7 +2,9 @@ import { object, TypeOf, ZodObject, ZodRawShape } from "zod";
 import { Result } from "../utils/result.ts";
 import { ValidationError } from "../validation/error.ts";
 
-export type MessagePayloadValidator<T> = (payload: Record<string, any>) => Result<T, ValidationError>;
+export type MessagePayloadValidator<T> = (
+  payload: Record<string, any>,
+) => Result<T, ValidationError>;
 
 export function payload<T extends ZodRawShape>(
   shape: T,

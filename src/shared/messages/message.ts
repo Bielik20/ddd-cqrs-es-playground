@@ -8,7 +8,7 @@ export type Matchable<T extends Message> = Constructor<T> & {
   readonly messageName: T["name"];
 };
 
-export type Parseable<T extends Message> = Constructor<T> & {
+export type Parseable<T extends Message> = Constructor<T> & Matchable<T> & {
   readonly validator: MessagePayloadValidator<T["payload"]>;
 };
 
@@ -47,13 +47,18 @@ export function message<
   return MessageMixin;
 }
 
-function parseMessage<T extends Message>(
+export function parseMessage<T extends Parseable<Message>[]>(
   input: unknown,
-  constructor: Parseable<T> & Matchable<T>,
-): Result<T, ValidationError> {
+  constructors: T,
+): Result<InstanceType<T[number]>, ValidationError> {
   const [record, inputError] = parseInput(input);
   if (inputError) {
     return Result.error(inputError);
+  }
+
+  const constructor = constructors.find((c) => c.messageName === record.name);
+  if (!constructor) {
+    return Result.error(new ValidationError("Message input must have a valid name"));
   }
 
   const [payload, validationError] = constructor.validator(record);
@@ -61,7 +66,7 @@ function parseMessage<T extends Message>(
     return Result.error(validationError);
   }
 
-  return Result.ok(new constructor(payload, record.id, record.timestamp));
+  return Result.ok(new constructor(payload));
 }
 
 function parseInput(input: unknown): Result<Record<string, any>, ValidationError> {

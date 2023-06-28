@@ -1,5 +1,6 @@
 import { string } from "zod";
 import { payload } from "../../shared/messages/message-payload.ts";
+import { parseMessage } from "../../shared/messages/message.ts";
 import { event } from "../../shared/models/event.ts";
 import { CustomerPaymentMethod } from "./shared.ts";
 
@@ -20,3 +21,14 @@ export class CustomerPaymentMethodDetachedEvent extends event(
   "CustomerPaymentMethodDetached",
   payload({ paymentMethodId: string() }),
 ) {}
+
+const [a, error] = parseMessage({}, [
+  CustomerCreatedEvent,
+  CustomerPaymentMethodAttachedEvent,
+  CustomerPaymentMethodDetachedEvent,
+]);
+
+if (a) {
+  a satisfies (CustomerCreatedEvent | CustomerPaymentMethodAttachedEvent);
+  a.payload;
+}
