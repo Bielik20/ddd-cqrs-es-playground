@@ -1,5 +1,5 @@
 import { object, string } from "zod";
-import { parseMessage } from "../../shared/messages/message.ts";
+import { Message } from "../../shared/messages/message.ts";
 import { event } from "../../shared/models/event.ts";
 import { CustomerPaymentMethod } from "./shared.ts";
 
@@ -25,7 +25,7 @@ const ogBaby = new CustomerCreatedEvent({ displayName: "john", email: "john@west
 ogBaby.aggregateId = "a";
 ogBaby.aggregateVersion = 1;
 
-const [newBaby, error] = parseMessage(
+const [newBaby, error] = Message.parse(
   JSON.stringify(ogBaby),
   [
     CustomerCreatedEvent,

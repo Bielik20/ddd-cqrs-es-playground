@@ -1,5 +1,6 @@
-import { literal, number, object, string, ZodType } from "https://deno.land/x/zod@v3.21.4/types.ts";
+import { literal, number, string, ZodType } from "https://deno.land/x/zod@v3.21.4/types.ts";
 import { Message } from "../messages/message.ts";
+import { parser } from "../validation/parser.ts";
 
 export abstract class AggregateEvent<
   TName extends string = string,
@@ -25,7 +26,7 @@ export function event<
 >(aggregateName: string, name: TName, payloadSchema: ZodType<TPayload>) {
   class AggregateEventMixin extends AggregateEvent<TName, TPayload> {
     static readonly messageName: TName = name;
-    static readonly schema = object({
+    static readonly parser = parser({
       aggregateVersion: number(),
       aggregateId: string(),
       aggregateName: literal(aggregateName),
