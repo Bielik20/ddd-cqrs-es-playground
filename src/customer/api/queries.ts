@@ -1,9 +1,8 @@
-import { payload } from "../../shared/messages/message-payload.ts";
+import { object, string } from "zod";
 import { message } from "../../shared/messages/message.ts";
 import { CustomerProjection } from "./projections.ts";
-import { string } from "zod";
 
-export class GetCustomerQuery extends message("GetCustomer", payload({ id: string() })) {}
+export class GetCustomerQuery extends message("GetCustomer", object({ id: string() })) {}
 
 export interface GetCustomerResult {
   customer: CustomerProjection;

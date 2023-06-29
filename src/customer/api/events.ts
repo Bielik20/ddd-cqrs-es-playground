@@ -1,5 +1,4 @@
-import { string } from "zod";
-import { payload } from "../../shared/messages/message-payload.ts";
+import { object, string } from "zod";
 import { parseMessage } from "../../shared/messages/message.ts";
 import { event } from "../../shared/models/event.ts";
 import { CustomerPaymentMethod } from "./shared.ts";
@@ -7,28 +6,36 @@ import { CustomerPaymentMethod } from "./shared.ts";
 export class CustomerCreatedEvent extends event(
   "Customer",
   "CustomerCreated",
-  payload({ displayName: string(), email: string().email() }),
+  object({ displayName: string(), email: string().email() }),
 ) {}
 
 export class CustomerPaymentMethodAttachedEvent extends event(
   "Customer",
   "CustomerPaymentMethodAttached",
-  payload({ paymentMethod: CustomerPaymentMethod }),
+  object({ paymentMethod: CustomerPaymentMethod }),
 ) {}
 
 export class CustomerPaymentMethodDetachedEvent extends event(
   "Customer",
   "CustomerPaymentMethodDetached",
-  payload({ paymentMethodId: string() }),
+  object({ paymentMethodId: string() }),
 ) {}
 
-const [a, error] = parseMessage({}, [
-  CustomerCreatedEvent,
-  CustomerPaymentMethodAttachedEvent,
-  CustomerPaymentMethodDetachedEvent,
-]);
+const ogBaby = new CustomerCreatedEvent({ displayName: "john", email: "john@westoros.org" });
+ogBaby.aggregateId = "a";
+ogBaby.aggregateVersion = 1;
 
-if (a) {
-  a satisfies (CustomerCreatedEvent | CustomerPaymentMethodAttachedEvent);
-  a.payload;
+const [newBaby, error] = parseMessage(
+  JSON.stringify(ogBaby),
+  [
+    CustomerCreatedEvent,
+    CustomerPaymentMethodAttachedEvent,
+    CustomerPaymentMethodDetachedEvent,
+  ],
+);
+
+console.log("bielik", newBaby, error);
+if (newBaby) {
+  newBaby satisfies (CustomerCreatedEvent | CustomerPaymentMethodAttachedEvent);
+  newBaby.payload;
 }

@@ -1,15 +1,15 @@
+import { literal, number, object, string, ZodType } from "https://deno.land/x/zod@v3.21.4/types.ts";
 import { nanoid } from "nanoid";
 import { Constructor } from "../utils/constructor.ts";
 import { Result } from "../utils/result.ts";
 import { ValidationError } from "../validation/error.ts";
-import { MessagePayloadValidator } from "./message-payload.ts";
 
 export type Matchable<T extends Message> = Constructor<T> & {
   readonly messageName: T["name"];
 };
 
-export type Parseable<T extends Message> = Constructor<T> & Matchable<T> & {
-  readonly validator: MessagePayloadValidator<T["payload"]>;
+export type Parseable<T extends Message> = Matchable<T> & {
+  readonly schema: ZodType;
 };
 
 export abstract class Message<
@@ -34,10 +34,15 @@ export abstract class Message<
 export function message<
   TPayload extends Record<string, any>,
   TName extends string = string,
->(name: TName, validator: MessagePayloadValidator<TPayload>) {
+>(name: TName, payloadSchema: ZodType<TPayload>) {
   class MessageMixin extends Message<TName, TPayload> {
     static readonly messageName: TName = name;
-    static readonly validator: MessagePayloadValidator<TPayload> = validator;
+    static readonly schema = object({
+      name: literal(name),
+      payload: payloadSchema,
+      id: string(),
+      timestamp: number(),
+    });
 
     constructor(payload: TPayload, id?: string, timestamp?: number) {
       super(name, payload, id, timestamp);
@@ -61,14 +66,18 @@ export function parseMessage<T extends Parseable<Message>[]>(
     return Result.error(new ValidationError("Message input must have a valid name"));
   }
 
-  const [payload, validationError] = constructor.validator(record);
-  if (validationError) {
-    return Result.error(validationError);
+  const result = constructor.schema.safeParse(record);
+  if (!result.success) {
+    // TODO: add message
+    return Result.error(new ValidationError("Invalid payload!", result.error));
   }
 
-  return Result.ok(new constructor(payload));
+  return Result.ok(result.data);
 }
 
+// TODO: make return type = instance type without methods (keyof etc.)
+// TODO: make Message, Event, Command constructors accept full input.
+// TODO: try making zod part of message, event, command mixins and make them validate full input
 function parseInput(input: unknown): Result<Record<string, any>, ValidationError> {
   if (typeof input === "string") {
     try {

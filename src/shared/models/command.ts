@@ -1,4 +1,4 @@
-import { MessagePayloadValidator } from "../messages/message-payload.ts";
+import { literal, number, object, string, ZodType } from "https://deno.land/x/zod@v3.21.4/types.ts";
 import { Message } from "../messages/message.ts";
 
 abstract class AggregateCommand<
@@ -19,10 +19,16 @@ abstract class AggregateCommand<
 export function command<
   TPayload extends Record<string, any>,
   TName extends string = string,
->(aggregateName: string, name: TName, validator: MessagePayloadValidator<TPayload>) {
+>(aggregateName: string, name: TName, payloadSchema: ZodType<TPayload>) {
   class AggregateCommandMixin extends AggregateCommand<TName, TPayload> {
     static readonly messageName: TName = name;
-    static readonly validator: MessagePayloadValidator<TPayload> = validator;
+    static readonly schema = object({
+      aggregateName: literal(aggregateName),
+      name: literal(name),
+      payload: payloadSchema,
+      id: string(),
+      timestamp: number(),
+    });
 
     constructor(payload: TPayload, id?: string, timestamp?: number) {
       super(aggregateName, name, payload, id, timestamp);
