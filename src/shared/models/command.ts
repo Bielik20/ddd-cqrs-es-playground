@@ -1,6 +1,6 @@
 import { literal, number, string, ZodType } from "https://deno.land/x/zod@v3.21.4/types.ts";
 import { Message } from "../messages/message.ts";
-import { parser } from "../validation/parser.ts";
+import { makeParser } from "../validation/parser.ts";
 
 abstract class AggregateCommand<
   TName extends string = string,
@@ -23,7 +23,7 @@ export function command<
 >(aggregateName: string, name: TName, payloadSchema: ZodType<TPayload>) {
   class AggregateCommandMixin extends AggregateCommand<TName, TPayload> {
     static readonly messageName: TName = name;
-    static readonly parser = parser({
+    static readonly parser = makeParser({
       aggregateName: literal(aggregateName),
       name: literal(name),
       payload: payloadSchema,

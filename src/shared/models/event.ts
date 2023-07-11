@@ -1,6 +1,6 @@
 import { literal, number, string, ZodType } from "https://deno.land/x/zod@v3.21.4/types.ts";
 import { Message } from "../messages/message.ts";
-import { parser } from "../validation/parser.ts";
+import { makeParser } from "../validation/parser.ts";
 
 export abstract class AggregateEvent<
   TName extends string = string,
@@ -13,10 +13,14 @@ export abstract class AggregateEvent<
     readonly aggregateName: string,
     name: TName,
     payload: Readonly<TPayload>,
+    aggregateId?: string,
+    aggregateVersion?: number,
     id?: string,
     timestamp?: number,
   ) {
     super(name, payload, id, timestamp);
+    this.aggregateId = aggregateId!;
+    this.aggregateVersion = aggregateVersion!;
   }
 }
 
@@ -26,7 +30,7 @@ export function event<
 >(aggregateName: string, name: TName, payloadSchema: ZodType<TPayload>) {
   class AggregateEventMixin extends AggregateEvent<TName, TPayload> {
     static readonly messageName: TName = name;
-    static readonly parser = parser({
+    static readonly parser = makeParser({
       aggregateVersion: number(),
       aggregateId: string(),
       aggregateName: literal(aggregateName),
@@ -36,8 +40,14 @@ export function event<
       timestamp: number(),
     });
 
-    constructor(payload: TPayload, id?: string, timestamp?: number) {
-      super(aggregateName, name, payload, id, timestamp);
+    constructor(
+      payload: TPayload,
+      aggregateId?: string,
+      aggregateVersion?: number,
+      id?: string,
+      timestamp?: number,
+    ) {
+      super(aggregateName, name, aggregateId, aggregateVersion, payload, id, timestamp);
     }
   }
 

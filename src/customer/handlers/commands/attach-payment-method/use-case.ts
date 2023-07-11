@@ -11,7 +11,7 @@ export class AttachPaymentMethodUseCase {
     const [, error] = aggregate.attachPaymentMethod(command);
 
     if (error) {
-      return Result.error(error);
+      return Result.err(error);
     }
     await this.gateway.save(aggregate);
     return Result.ok();

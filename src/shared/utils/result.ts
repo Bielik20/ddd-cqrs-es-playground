@@ -10,8 +10,8 @@ function ok<TValue>(value?: TValue): OkResult<TValue> {
   return [value, undefined] as OkResult<TValue>;
 }
 
-function error<TError>(error: TError): ErrorResult<TError> {
+function err<TError>(error: TError): ErrorResult<TError> {
   return [undefined, error];
 }
 
-export const Result = { ok, error };
+export const Result = { ok, err };

@@ -62,7 +62,7 @@ export abstract class Aggregate<TState, TEvent extends AggregateEvent> {
     error.aggregateName = this.name;
     error.aggregateId = this.id;
     error.aggregateVersion = this.version;
-    return Result.error(error);
+    return Result.err(error);
   }
 }
 
