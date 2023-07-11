@@ -1,7 +1,7 @@
-import { literal, number, string, ZodType } from "https://deno.land/x/zod@v3.21.4/types.ts";
+import { literal, number, object, string, ZodType } from "zod";
 import { nanoid } from "nanoid";
 import { ParseError } from "../validation/error.ts";
-import { jsonParse, makeParser, SafeParser } from "../validation/parser.ts";
+import { jsonParse, makeSafeParse, SafeParse } from "../validation/parser.ts";
 import { Constructor } from "../utils/constructor.ts";
 import { Result } from "../utils/result.ts";
 
@@ -10,7 +10,7 @@ export type Matchable<T extends Message> = Constructor<T> & {
 };
 
 export type Parseable<T extends Message> = Matchable<T> & {
-  readonly parser: SafeParser<T>;
+  readonly parse: SafeParse<T>;
 };
 
 export abstract class Message<
@@ -24,7 +24,7 @@ export abstract class Message<
     return constructor.messageName === event.name;
   }
 
-  static parse<T extends Parseable<Message>[]>(
+  static safeParse<T extends Parseable<Message>[]>(
     input: unknown,
     constructors: T,
   ): Result<InstanceType<T[number]>, ParseError> {
@@ -38,7 +38,7 @@ export abstract class Message<
       return Result.err(new ParseError("Message input must have a valid name"));
     }
 
-    const [message, error] = constructor.parser(record);
+    const [message, error] = constructor.parse(record);
     if (error) {
       return Result.err(error);
     }
@@ -60,12 +60,12 @@ export function message<
 >(name: TName, payloadSchema: ZodType<TPayload>) {
   class MessageMixin extends Message<TName, TPayload> {
     static readonly messageName: TName = name;
-    static readonly parser = makeParser({
+    static readonly parse = makeSafeParse(object({
       name: literal(name),
       payload: payloadSchema,
       id: string(),
       timestamp: number(),
-    });
+    }));
 
     constructor(payload: TPayload, id?: string, timestamp?: number) {
       super(name, payload, id, timestamp);

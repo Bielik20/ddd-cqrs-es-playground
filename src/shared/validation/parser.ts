@@ -1,17 +1,16 @@
-import { object, TypeOf, ZodObject, ZodRawShape } from "https://deno.land/x/zod@v3.21.4/types.ts";
-import { Result } from "../utils/result.ts";
+import { TypeOf, ZodType } from "https://deno.land/x/zod@v3.21.4/types.ts";
 import { ParseError } from "./error.ts";
+import { Result } from "../utils/result.ts";
 
-export type SafeParser<T> = (
-  input: Record<string, any>,
+export type SafeParse<T> = (
+  input: any,
 ) => Result<T, ParseError>;
 
-export function makeParser<T extends ZodRawShape>(
-  shape: T,
-): SafeParser<TypeOf<ZodObject<T>>> {
-  const schema = object(shape);
-  return (payload) => {
-    const result = schema.safeParse(payload);
+export function makeSafeParse<T extends ZodType>(
+  schema: T,
+): SafeParse<TypeOf<T>> {
+  return (input) => {
+    const result = schema.safeParse(input);
     if (!result.success) {
       // TODO: add message
       return Result.err(new ParseError("Invalid record", result.error));

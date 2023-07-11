@@ -1,6 +1,6 @@
-import { literal, number, string, ZodType } from "https://deno.land/x/zod@v3.21.4/types.ts";
+import { literal, number, object, string, ZodType } from "https://deno.land/x/zod@v3.21.4/types.ts";
 import { Message } from "../messages/message.ts";
-import { makeParser } from "../validation/parser.ts";
+import { makeSafeParse } from "../validation/parser.ts";
 
 abstract class AggregateCommand<
   TName extends string = string,
@@ -23,13 +23,13 @@ export function command<
 >(aggregateName: string, name: TName, payloadSchema: ZodType<TPayload>) {
   class AggregateCommandMixin extends AggregateCommand<TName, TPayload> {
     static readonly messageName: TName = name;
-    static readonly parser = makeParser({
+    static readonly parse = makeSafeParse(object({
       aggregateName: literal(aggregateName),
       name: literal(name),
       payload: payloadSchema,
       id: string(),
       timestamp: number(),
-    });
+    }));
 
     constructor(payload: TPayload, id?: string, timestamp?: number) {
       super(aggregateName, name, payload, id, timestamp);
