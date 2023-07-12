@@ -1,6 +1,6 @@
 import { number, object, string } from "zod";
 import { assertDefined } from "../utils/assert-defined.ts";
-import { on, reducer, state } from "./message-reducer.ts";
+import { makeReducer, on, state } from "./message-reducer.ts";
 import { message } from "./message.ts";
 
 class FooMessage extends message("Foo", object({ name: string() })) {}
@@ -11,7 +11,7 @@ interface SampleState {
   age: number;
 }
 
-const sampleStateReducer = reducer(state<SampleState | null>(null), [
+const sampleStateReducer = makeReducer(state<SampleState | null>(null), [
   on(FooMessage, (_, message) => {
     const a: SampleState = {
       name: message.payload.name,
@@ -26,7 +26,7 @@ const sampleStateReducer = reducer(state<SampleState | null>(null), [
 ]);
 
 Deno.bench(function createReducer() {
-  reducer(state<SampleState | null>(null), [
+  makeReducer(state<SampleState | null>(null), [
     on(FooMessage, (_, message) => {
       const a: SampleState = {
         name: message.payload.name,

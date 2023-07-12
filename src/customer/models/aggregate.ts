@@ -1,4 +1,4 @@
-import { on, reducer, state } from "../../shared/messages/message-reducer.ts";
+import { makeReducer, on, state } from "../../shared/messages/message-reducer.ts";
 import { aggregate } from "../../shared/models/aggregate.ts";
 import { assertDefined } from "../../shared/utils/assert-defined.ts";
 import { Result } from "../../shared/utils/result.ts";
@@ -27,7 +27,7 @@ interface CustomerAggregateState {
 
 export class CustomerAggregate extends aggregate(
   "Customer",
-  reducer(state<CustomerAggregateState | null>(null), [
+  makeReducer(state<CustomerAggregateState | null>(null), [
     on(CustomerCreatedEvent, (_, event) => ({
       id: event.aggregateId,
       paymentMethods: [],

@@ -58,7 +58,7 @@ export type Reducer<TState, TMessage extends Message> =
 export type ReducerMessage<T> = T extends Reducer<any, infer TMessage> ? TMessage : never;
 export type ReducerState<T> = T extends Reducer<infer TState, any> ? TState : never;
 
-export function reducer<TState, THandlers extends OnDescriptor<TState, any>[]>(
+export function makeReducer<TState, THandlers extends OnDescriptor<TState, any>[]>(
   manager: ReducerStateManager<TState>,
   handlers: THandlers,
 ): Reducer<TState, OnDescriptorsMessages<THandlers>> {
