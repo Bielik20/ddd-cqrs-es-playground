@@ -1,5 +1,4 @@
 import { object, string } from "zod";
-import { Message } from "../../shared/messages/message.ts";
 import { event } from "../../shared/models/event.ts";
 import { CustomerPaymentMethod } from "./shared.ts";
 
@@ -20,22 +19,3 @@ export class CustomerPaymentMethodDetachedEvent extends event(
   "CustomerPaymentMethodDetached",
   object({ paymentMethodId: string() }),
 ) {}
-
-const ogBaby = new CustomerCreatedEvent({ displayName: "john", email: "john@westoros.org" });
-ogBaby.aggregateId = "a";
-ogBaby.aggregateVersion = 1;
-
-const [newBaby, error] = Message.parse(
-  JSON.stringify(ogBaby),
-  [
-    CustomerCreatedEvent,
-    CustomerPaymentMethodAttachedEvent,
-    CustomerPaymentMethodDetachedEvent,
-  ],
-);
-
-console.log("bielik", newBaby, error);
-if (newBaby) {
-  newBaby satisfies (CustomerCreatedEvent | CustomerPaymentMethodAttachedEvent);
-  newBaby.payload;
-}
