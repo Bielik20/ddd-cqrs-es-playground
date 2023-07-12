@@ -1,6 +1,6 @@
-import { TypeOf, ZodType } from "https://deno.land/x/zod@v3.21.4/types.ts";
-import { ParseError } from "./error.ts";
+import { TypeOf, ZodType } from "zod";
 import { Result } from "../utils/result.ts";
+import { ParseError } from "./error.ts";
 
 export type SafeParse<T> = (
   input: any,

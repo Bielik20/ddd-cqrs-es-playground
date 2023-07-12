@@ -1,7 +1,7 @@
 import { literal, number, object, string, ZodType } from "zod";
 import { nanoid } from "nanoid";
 import { ParseError } from "../validation/error.ts";
-import { jsonParse, makeSafeParse, SafeParse } from "../validation/parser.ts";
+import { jsonParse, makeSafeParse, SafeParse } from "../validation/safe-parse.ts";
 import { Constructor } from "../utils/constructor.ts";
 import { Result } from "../utils/result.ts";
 

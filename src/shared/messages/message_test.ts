@@ -1,5 +1,5 @@
 import { assertEquals, assertNotEquals } from "https://deno.land/std@0.178.0/testing/asserts.ts";
-import { number, object, string } from "https://deno.land/x/zod@v3.21.4/types.ts";
+import { number, object, string } from "zod";
 import { Message, message } from "./message.ts";
 
 class AlphaMessage extends message("Alpha", object({ name: string() })) {}

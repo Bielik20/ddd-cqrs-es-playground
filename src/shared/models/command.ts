@@ -1,6 +1,6 @@
-import { literal, number, object, string, ZodType } from "https://deno.land/x/zod@v3.21.4/types.ts";
+import { literal, number, object, string, ZodType } from "zod";
 import { Message } from "../messages/message.ts";
-import { makeSafeParse } from "../validation/parser.ts";
+import { makeSafeParse } from "../validation/safe-parse.ts";
 
 abstract class AggregateCommand<
   TName extends string = string,
