@@ -20,7 +20,7 @@ export function makeSafeParse<T extends ZodType>(
   };
 }
 
-export function jsonParse(input: unknown): Result<Record<string, any>, ParseError> {
+export function safeParseRecord(input: unknown): Result<Record<string, any>, ParseError> {
   if (typeof input === "string") {
     try {
       return Result.ok(JSON.parse(input));

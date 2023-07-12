@@ -1,7 +1,7 @@
 import { literal, number, object, string, ZodType } from "zod";
 import { nanoid } from "nanoid";
 import { ParseError } from "../validation/error.ts";
-import { jsonParse, makeSafeParse, SafeParse } from "../validation/safe-parse.ts";
+import { safeParseRecord, makeSafeParse, SafeParse } from "../validation/safe-parse.ts";
 import { Constructor } from "../utils/constructor.ts";
 import { Result } from "../utils/result.ts";
 
@@ -28,7 +28,7 @@ export abstract class Message<
     input: unknown,
     constructors: T,
   ): Result<InstanceType<T[number]>, ParseError> {
-    const [record, jsonError] = jsonParse(input);
+    const [record, jsonError] = safeParseRecord(input);
     if (jsonError) {
       return Result.err(jsonError);
     }
