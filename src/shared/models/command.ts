@@ -1,6 +1,6 @@
 import { literal, number, object, string, ZodType } from "zod";
 import { Message } from "../messages/message.ts";
-import { makeSafeParse } from "../validation/safe-parse.ts";
+import { makeSafeParse, SafeParse } from '../validation/safe-parse.ts';
 
 abstract class AggregateCommand<
   TName extends string = string,
@@ -23,13 +23,13 @@ export function command<
 >(aggregateName: string, name: TName, payloadSchema: ZodType<TPayload>) {
   class AggregateCommandMixin extends AggregateCommand<TName, TPayload> {
     static readonly messageName: TName = name;
-    static readonly parse = makeSafeParse(object({
+    static readonly safeParse = makeSafeParse(object({
       aggregateName: literal(aggregateName),
       name: literal(name),
       payload: payloadSchema,
       id: string(),
       timestamp: number(),
-    }));
+    })) as SafeParse<AggregateCommandMixin>;
 
     constructor(payload: TPayload, id?: string, timestamp?: number) {
       super(aggregateName, name, payload, id, timestamp);
