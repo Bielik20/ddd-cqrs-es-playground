@@ -1,6 +1,6 @@
-import { assertEquals, assertNotEquals } from 'https://deno.land/std@0.178.0/testing/asserts.ts';
-import { number, object, string } from 'zod';
-import { message, safeParseMessage } from './message.ts';
+import { assertEquals, assertNotEquals } from "https://deno.land/std@0.178.0/testing/asserts.ts";
+import { number, object, string } from "zod";
+import { message, safeParseMessage } from "./message.ts";
 
 class AlphaMessage extends message("Alpha", object({ name: string() })) {}
 class BetaMessage extends message("Beta", object({ age: number() })) {}

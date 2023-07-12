@@ -70,7 +70,7 @@ export function aggregate<TState, TEvent extends AggregateEvent>(
   name: string,
   reducer: Reducer<TState, TEvent>,
 ) {
-  abstract class AggregateMixin extends Aggregate<TState, TEvent> {
+  abstract class AggregateAugmented extends Aggregate<TState, TEvent> {
     override readonly name = name;
 
     constructor(id: string) {
@@ -78,5 +78,5 @@ export function aggregate<TState, TEvent extends AggregateEvent>(
     }
   }
 
-  return AggregateMixin;
+  return AggregateAugmented;
 }

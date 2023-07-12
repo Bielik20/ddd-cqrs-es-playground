@@ -1,6 +1,6 @@
 import { literal, number, object, string, ZodType } from "zod";
 import { Message } from "../messages/message.ts";
-import { makeSafeParse, SafeParse } from '../validation/safe-parse.ts';
+import { makeSafeParse, SafeParse } from "../validation/safe-parse.ts";
 
 export abstract class AggregateEvent<
   TName extends string = string,
@@ -12,7 +12,7 @@ export abstract class AggregateEvent<
   protected constructor(
     readonly aggregateName: string,
     name: TName,
-    payload: Readonly<TPayload>,
+    payload: TPayload,
     aggregateId?: string,
     aggregateVersion?: number,
     id?: string,
@@ -28,7 +28,7 @@ export function event<
   TPayload extends Record<string, any>,
   TName extends string = string,
 >(aggregateName: string, name: TName, payloadSchema: ZodType<TPayload>) {
-  class AggregateEventMixin extends AggregateEvent<TName, TPayload> {
+  class AggregateEventAugmented extends AggregateEvent<TName, TPayload> {
     static readonly messageName: TName = name;
     static readonly safeParse = makeSafeParse(object({
       aggregateVersion: number(),
@@ -38,7 +38,7 @@ export function event<
       payload: payloadSchema,
       id: string(),
       timestamp: number(),
-    })) as SafeParse<AggregateEventMixin>;
+    })) as SafeParse<AggregateEventAugmented>;
 
     constructor(
       payload: TPayload,
@@ -51,5 +51,5 @@ export function event<
     }
   }
 
-  return AggregateEventMixin;
+  return AggregateEventAugmented;
 }

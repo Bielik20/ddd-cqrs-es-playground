@@ -1,9 +1,9 @@
-import { nanoid } from 'nanoid';
-import { literal, number, object, string, ZodType } from 'zod';
-import { Constructor } from '../utils/constructor.ts';
-import { Result } from '../utils/result.ts';
-import { ParseError } from '../validation/error.ts';
-import { makeSafeParse, SafeParse, safeParseRecord } from '../validation/safe-parse.ts';
+import { nanoid } from "nanoid";
+import { literal, number, object, string, ZodType } from "zod";
+import { Constructor } from "../utils/constructor.ts";
+import { Result } from "../utils/result.ts";
+import { ParseError } from "../validation/error.ts";
+import { makeSafeParse, SafeParse, safeParseRecord } from "../validation/safe-parse.ts";
 
 export type Matchable<T extends Message> = Constructor<T> & {
   readonly messageName: T["name"];
@@ -58,19 +58,19 @@ export function message<
   TPayload extends Record<string, any>,
   TName extends string = string,
 >(name: TName, payloadSchema: ZodType<TPayload>) {
-  class MessageMixin extends Message<TName, TPayload> {
+  class MessageAugmented extends Message<TName, TPayload> {
     static readonly messageName: TName = name;
     static readonly safeParse = makeSafeParse(object({
       name: literal(name),
       payload: payloadSchema,
       id: string(),
       timestamp: number(),
-    })) as SafeParse<MessageMixin>;
+    })) as SafeParse<MessageAugmented>;
 
     constructor(payload: TPayload, id?: string, timestamp?: number) {
       super(name, payload, id, timestamp);
     }
   }
 
-  return MessageMixin;
+  return MessageAugmented;
 }
